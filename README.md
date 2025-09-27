@@ -1,6 +1,7 @@
-# Finances Python Project
 
-This is a basic Python project scaffolded with a virtual environment (`venv`).
+# Finances CLI App
+
+This project helps you plan future expenses, track incomes, and see what you can save. It provides a CLI interface and a mini dashboard summary.
 
 ## Setup
 
@@ -12,20 +13,37 @@ This is a basic Python project scaffolded with a virtual environment (`venv`).
    ```sh
    source .venv/bin/activate
    ```
-3. Install dependencies:
+3. Install dependencies (if any):
    ```sh
    pip install -r requirements.txt
    ```
 
-## Run
+## Usage
 
-To run the main script:
+Run the CLI app:
 ```sh
-.venv/bin/python main.py
+.venv/bin/python cli_app.py <command> [options]
 ```
 
+### Commands
+
+- Add an expense:
+  ```sh
+  .venv/bin/python cli_app.py add-expense <amount> <description>
+  ```
+- Add an income:
+  ```sh
+  .venv/bin/python cli_app.py add-income <amount> <description>
+  ```
+- Show dashboard summary:
+  ```sh
+  .venv/bin/python cli_app.py dashboard
+  ```
+
 ## Project Structure
-- `main.py`: Entry point
+- `cli_app.py`: Main CLI application
+- `main.py`: Placeholder entry point
 - `requirements.txt`: Dependencies
+- `finances_data.json`: Data storage for expenses and incomes
 - `.venv/`: Virtual environment
 - `.github/copilot-instructions.md`: Copilot instructions

@@ -1,0 +1,16 @@
+{
+  "incomes": [
+    {"name": "Salary", "value": 3661.4, "time": "MONTH"}
+  ],
+  "expenses": [
+    {"name": "Rent", "value": 703, "time": "MONTH"},
+    {"name": "Groceries", "value": 250, "time": "MONTH"},
+    {"name": "Gym", "value": 300, "time": "ANNUAL"},
+    {"name": "Ski pass", "value": 320, "time": "ANNUAL"},
+    {"name": "Car maintenance", "value": 300, "time": "ANNUAL"},
+    {"name": "Car & Home Insurance", "value": 102, "time": "MONTH"},
+    {"name": "Gas", "value": 120, "time": "MONTH"},
+    {"name": "Internet", "value": 14, "time": "MONTH"},
+    {"name": "Phone", "value": 25, "time": "MONTH"}
+  ]
+}
