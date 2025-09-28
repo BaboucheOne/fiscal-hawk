@@ -4,6 +4,8 @@
   ],
   "expenses": [
     {"name": "Rent", "value": 703, "time": "MONTH"},
+    {"name": "Spotify", "value": 16, "time": "MONTH"},
+    {"name": "Xbox Game Pass", "value": 19, "time": "MONTH"},
     {"name": "Groceries", "value": 250, "time": "MONTH"},
     {"name": "Gym", "value": 300, "time": "ANNUAL"},
     {"name": "Ski pass", "value": 320, "time": "ANNUAL"},
