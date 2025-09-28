@@ -18,8 +18,9 @@
   "saving": {
     "warning_percentage": 75,
     "items": [
-      {"name": "Vacation", "target": 2000},
-      {"name": "Actions", "target": 15000}
+      {"name": "Vacation", "target": 4000},
+      {"name": "CELIAPP", "target": 8000},
+      {"name": "Actions", "target": 9000}
     ]
   }
 }
