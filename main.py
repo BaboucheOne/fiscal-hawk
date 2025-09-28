@@ -39,7 +39,24 @@ def main():
     print("\n--- Monthly Summary ---")
     print(f"Total income: {total_income:.2f}$")
     print(f"Total expenses: {total_expense:.2f}$")
-    print(f"Net balance: {total_income - total_expense:.2f}$")
+    net_balance = total_income - total_expense
+    print(f"Net balance: {net_balance:.2f}$")
+
+    saving = data.get('saving')
+    if saving:
+        saving_percent = saving.get('percentage', 0)
+        saving_amount = net_balance * saving_percent / 100
+        print(f"\nSaving ({saving_percent}% of net balance): {saving_amount:.2f}$")
+        items = saving.get('items', [])
+        total_item_percent = sum(item.get('percent', 0) for item in items)
+        if total_item_percent != 100:
+            print(f"WARNING: Saving items percent sum is {total_item_percent}%. You do not use all of your saving %.")
+        print("Saving distribution:")
+        for item in items:
+            item_amount = saving_amount * item.get('percent', 0) / 100
+            print(f"- {item['name']}: {item_amount:.2f}$ (target: {item['target']}$, {item['percent']}%)")
+        net_balance_after_saving = net_balance - saving_amount
+        print(f"\nNet balance after savings: {net_balance_after_saving:.2f}$")
 
 if __name__ == "__main__":
     main()

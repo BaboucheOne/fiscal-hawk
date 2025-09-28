@@ -14,5 +14,13 @@
     {"name": "Gas", "value": 120, "time": "MONTH"},
     {"name": "Internet", "value": 14, "time": "MONTH"},
     {"name": "Phone", "value": 25, "time": "MONTH"}
-  ]
+  ],
+  "saving": {
+    "percentage": 20,
+    "items": [
+      {"name": "Emergency Fund", "target": 5000, "percent": 50},
+      {"name": "Vacation", "target": 2000, "percent": 30},
+      {"name": "New Laptop", "target": 1500, "percent": 20}
+    ]
+  }
 }
