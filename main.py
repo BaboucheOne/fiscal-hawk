@@ -23,6 +23,7 @@ def to_monthly(value, time):
 
 class FinanceApp(App):
     BINDINGS = [("q", "quit", "Quit")]
+    TITLE = "Finances Summary"
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -38,6 +39,8 @@ class FinanceApp(App):
         yield Footer()
 
     def on_mount(self):
+        self.title = self.TITLE
+
         json_path = os.path.join(os.path.dirname(__file__), 'finances.json')
         with open(json_path, 'r') as f:
             data = json.load(f)
