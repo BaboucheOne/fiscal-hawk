@@ -528,4 +528,4 @@ MigrationBackup/
 
 # End of https://www.toptal.com/developers/gitignore/api/python,vs
 
-finances.json
+finances.yml

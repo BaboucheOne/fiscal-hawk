@@ -2,7 +2,7 @@
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Tree, DataTable, Static
 from textual.containers import Container, Horizontal
-import json
+import yaml
 import os
 from enum import Enum
 
@@ -41,9 +41,9 @@ class FinanceApp(App):
     def on_mount(self):
         self.title = self.TITLE
 
-        json_path = os.path.join(os.path.dirname(__file__), 'finances.json')
-        with open(json_path, 'r') as f:
-            data = json.load(f)
+        data_path = os.path.join(os.path.dirname(__file__), 'finances.yml')
+        with open(data_path, 'r') as f:
+            data = yaml.safe_load(f)
 
         # Incomes tree
         incomes_tree = self.query_one("#incomes_tree", Tree)
