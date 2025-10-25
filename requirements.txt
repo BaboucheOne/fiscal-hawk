@@ -1,3 +1,2 @@
-# Add your project dependencies here
 textual>=0.25.0
 PyYAML>=6.0
