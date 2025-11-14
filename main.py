@@ -1,4 +1,3 @@
-
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Tree, DataTable, Static
 from textual.containers import Container, Horizontal
@@ -20,6 +19,33 @@ def to_monthly(value, time):
         return value / 12
     else:
         return 0
+
+
+def yearly_adjusted_monthly_value(entry):
+    base_value = entry["value"]
+    time = entry["time"]
+    monthly_base = to_monthly(base_value, time)
+
+    future_value = entry.get("future_value")
+    future_date = entry.get("future_date")
+
+    # No future change → simple monthly
+    if not future_value or not future_date:
+        return monthly_base
+
+    year, month = map(int, future_date.split("-"))
+
+    # Number of months with new salary in the year
+    new_months = max(0, 12 - (month - 1))
+    old_months = 12 - new_months
+
+    monthly_future = to_monthly(future_value, time)
+
+    annual_total = old_months * monthly_base + new_months * monthly_future
+    monthly_average = annual_total / 12
+
+    return monthly_average
+
 
 class FinanceApp(App):
     BINDINGS = [("q", "quit", "Quit")]
@@ -49,8 +75,11 @@ class FinanceApp(App):
         incomes_tree = self.query_one("#incomes_tree", Tree)
         total_income = 0
         for income in data.get('incomes', []):
-            monthly = to_monthly(income['value'], income['time'])
-            incomes_tree.root.add_leaf(f"{income['name']}: {monthly:.2f}$ ({income['time']})")
+            income_value = yearly_adjusted_monthly_value(income)
+            monthly = to_monthly(income_value, income['time'])
+            incomes_tree.root.add_leaf(
+                f"{income['name']}: {monthly:.2f}$ (weighted annual average)"
+            )
             total_income += monthly
         incomes_tree.root.expand()
 
