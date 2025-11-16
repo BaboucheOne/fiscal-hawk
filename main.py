@@ -29,13 +29,11 @@ def yearly_adjusted_monthly_value(entry):
     future_value = entry.get("future_value")
     future_date = entry.get("future_date")
 
-    # No future change → simple monthly
     if not future_value or not future_date:
         return monthly_base
 
     year, month = map(int, future_date.split("-"))
 
-    # Number of months with new salary in the year
     new_months = max(0, 12 - (month - 1))
     old_months = 12 - new_months
 
@@ -45,6 +43,29 @@ def yearly_adjusted_monthly_value(entry):
     monthly_average = annual_total / 12
 
     return monthly_average
+
+
+def compound_interest_calculator(
+        current_value: float,
+        monthly_contribution: float,
+        annual_rate: float,
+        years: float,
+        compounds_per_year: int = 12
+) -> float:
+    r = annual_rate
+    n = compounds_per_year
+    t = years
+    p = current_value
+    pmt = monthly_contribution
+
+    future_p = p * (1 + r / n) ** (n * t)
+
+    if pmt > 0:
+        future_pmt = pmt * ((1 + r / n) ** (n * t) - 1) / (r / n)
+    else:
+        future_pmt = 0
+
+    return future_p + future_pmt
 
 
 class FinanceApp(App):
