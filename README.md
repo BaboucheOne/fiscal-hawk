@@ -24,23 +24,36 @@ The app now reads `finances.yml` (YAML) from the project root. Create a `finance
 
 ```yaml
 incomes:
-   - name: Salary
-      value: 1500
-      time: MONTH
+  - name: Salary
+    value: 1500
+    time: MONTH
+    future_value: 1800
+    future_date: "2025-05"
 
 expenses:
-   - name: Rent
-      value: 350
-      time: MONTH
-   - name: Spotify
-      value: 16
-      time: MONTH
+  - name: Rent
+    value: 350
+    time: MONTH
+  - name: Spotify
+    value: 16
+    time: MONTH
 
 saving:
    warning_percentage: 75
    items:
-      - name: Vacation
-         target: 2000
+    - name: Vacation
+      target: 2000
+
+market:
+  etf:
+    - name: "VGRO"
+      price: 10000
+
+simulation:
+    annual_rate: .1
+    until_year: 2050
+    max_annual_rate: 0.15
+    min_annual_rate: -0.2
 ```
 
 Notes:
