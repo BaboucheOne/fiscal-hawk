@@ -1,9 +1,16 @@
+import plotext as plt
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Tree, DataTable, Static
 from textual.containers import Container, Horizontal
+from textual.screen import Screen
 import yaml
 import os
 from enum import Enum
+
+from textual_plotext import PlotextPlot
+
+
+# ------------------ Finance Helpers ------------------
 
 class Time(Enum):
     DAY = 'DAY'
@@ -19,7 +26,6 @@ def to_monthly(value, time):
         return value / 12
     else:
         return 0
-
 
 def yearly_adjusted_monthly_value(entry):
     base_value = entry["value"]
@@ -44,7 +50,6 @@ def yearly_adjusted_monthly_value(entry):
 
     return monthly_average
 
-
 def compound_interest_calculator(
         current_value: float,
         monthly_contribution: float,
@@ -67,9 +72,65 @@ def compound_interest_calculator(
 
     return future_p + future_pmt
 
+# ------------------ Compound Interest Screen ------------------
+
+class CompoundInterestScreen(Screen):
+    BINDINGS = [("b", "back", "Back")]
+
+    def __init__(self, market_data, simulation_data):
+        super().__init__()
+        self.market_data = market_data
+        self.simulation_data = simulation_data
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield PlotextPlot(id="chart_area")
+        yield Footer()
+
+    def on_mount(self):
+        self.draw_chart()
+
+    def draw_chart(self):
+        chart = self.query_one("#chart_area", PlotextPlot).plt
+
+        etfs = self.market_data.get('etf', [])
+
+        start_year = 2025
+        until_year = self.simulation_data.get('until_year', 2050)
+        annual_rate = self.simulation_data.get('annual_rate', 0.1)
+        years_list = list(range(start_year, until_year + 1))
+
+        chart.clear_figure()
+
+        for etf in etfs:
+            start_value = etf['price']
+            etf_name = etf['name']
+
+            values = [
+                compound_interest_calculator(
+                    current_value=start_value,
+                    monthly_contribution=750,
+                    annual_rate=annual_rate,
+                    years=year - start_year
+                )
+                for year in years_list
+            ]
+
+            chart.plot(years_list, values, marker="dot", label=etf_name)
+
+        chart.title("Portfolio Growth")
+        chart.xlabel("Year")
+        chart.ylabel("Value ($)")
+
+        chart.show()
+
+    def action_back(self):
+        self.app.pop_screen()
+
+# ------------------ Main App ------------------
 
 class FinanceApp(App):
-    BINDINGS = [("q", "quit", "Quit")]
+    BINDINGS = [("q", "quit", "Quit"), ("c", "compound", "Show Compound Interest")]
     TITLE = "Finances Summary"
 
     def compose(self) -> ComposeResult:
@@ -87,20 +148,21 @@ class FinanceApp(App):
 
     def on_mount(self):
         self.title = self.TITLE
-
         data_path = os.path.join(os.path.dirname(__file__), 'finances.yml')
         with open(data_path, 'r') as f:
-            data = yaml.safe_load(f)
+            self.data = yaml.safe_load(f)
 
+        self.load_finances()
+
+    def load_finances(self):
+        data = self.data
         # Incomes tree
         incomes_tree = self.query_one("#incomes_tree", Tree)
         total_income = 0
         for income in data.get('incomes', []):
             income_value = yearly_adjusted_monthly_value(income)
             monthly = to_monthly(income_value, income['time'])
-            incomes_tree.root.add_leaf(
-                f"{income['name']}: {monthly:.2f}$ (weighted annual average)"
-            )
+            incomes_tree.root.add_leaf(f"{income['name']}: {monthly:.2f}$ (weighted annual average)")
             total_income += monthly
         incomes_tree.root.expand()
 
@@ -118,7 +180,6 @@ class FinanceApp(App):
         saving = data.get('saving')
         monthly_saving_total = 0
         if saving:
-            warning_percentage = saving.get('warning_percentage', 0)
             items = saving.get('items', [])
             for item in items:
                 monthly_cost = item['target'] / 12
@@ -130,7 +191,6 @@ class FinanceApp(App):
         annual_net_balance = net_balance * 12
         net_balance_after_saving = net_balance - monthly_saving_total
 
-        # Summary table
         table = self.query_one("#summary_table", DataTable)
         table.add_columns("Item", "Monthly ($)", "Annual ($)")
         table.add_rows([
@@ -143,8 +203,12 @@ class FinanceApp(App):
         table.cursor_type = "row"
         table.focus()
 
+    def action_compound(self):
+        self.push_screen(CompoundInterestScreen(self.data['market'], self.data['simulation']))
+
 def main():
     FinanceApp().run()
+
 
 if __name__ == "__main__":
     main()
