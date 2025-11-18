@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 import plotext as plt
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Tree, DataTable, Static
@@ -77,10 +79,11 @@ def compound_interest_calculator(
 class CompoundInterestScreen(Screen):
     BINDINGS = [("b", "back", "Back")]
 
-    def __init__(self, market_data, simulation_data):
+    def __init__(self, market_data, simulation_data, saving_items: List[Dict]):
         super().__init__()
         self.market_data = market_data
         self.simulation_data = simulation_data
+        self.saving_items = saving_items
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -106,10 +109,15 @@ class CompoundInterestScreen(Screen):
             start_value = etf['price']
             etf_name = etf['name']
 
+            monthly_contribution = 0.0
+            item = next((x for x in self.saving_items if x['name'] == etf_name), None)
+            if item:
+                monthly_contribution = item['target'] / 12.0
+
             values = [
                 compound_interest_calculator(
                     current_value=start_value,
-                    monthly_contribution=750,
+                    monthly_contribution=monthly_contribution,
                     annual_rate=annual_rate,
                     years=year - start_year
                 )
@@ -204,7 +212,7 @@ class FinanceApp(App):
         table.focus()
 
     def action_compound(self):
-        self.push_screen(CompoundInterestScreen(self.data['market'], self.data['simulation']))
+        self.push_screen(CompoundInterestScreen(self.data['market'], self.data['simulation'], self.data['saving']['items']))
 
 def main():
     FinanceApp().run()
