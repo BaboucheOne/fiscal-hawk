@@ -50,10 +50,10 @@ market:
       price: 10000
 
 simulation:
-    annual_rate: .1
+    runs: 100
     until_year: 2050
-    max_annual_rate: 0.15
-    min_annual_rate: -0.2
+    max_annual_rate: 0.1
+    min_annual_rate: -0.1
 ```
 
 Notes:
