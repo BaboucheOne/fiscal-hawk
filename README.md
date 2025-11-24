@@ -60,3 +60,12 @@ Notes:
 - `time` accepts `DAY`, `MONTH`, or `ANNUAL`.
 - `value` and `target` are numeric. Monthly values are used in the TUI summary.
 
+## Dev commands
+```shell
+ruff check . --fix
+```
+
+```shell
+black .
+```
+
