@@ -26,7 +26,7 @@ class FinanceApp(App):
         yield Container(
             Horizontal(
                 Tree("Incomes", id="incomes_tree"),
-                Tree("Expenses", id="expenses_tree"),
+                Tree("Expenses", id="planned_expenses_tree"),
                 Tree("Saving", id="saving_tree"),
             ),
             Static("\n"),
