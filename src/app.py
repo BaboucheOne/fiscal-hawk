@@ -27,6 +27,7 @@ class FinanceApp(App):
             Horizontal(
                 Tree("Incomes", id="incomes_tree"),
                 Tree("Planned Expenses", id="planned_expenses_tree"),
+                Tree("Expenses", id="expenses_tree"),
                 Tree("Saving", id="saving_tree"),
             ),
             Static("\n"),
@@ -54,13 +55,13 @@ class FinanceApp(App):
 
         # Expenses tree
         planned_expenses_tree = self.query_one("#planned_expenses_tree", Tree)
-        total_expense = 0
+        planned_total_expense = 0
         for expense in data.get("planned_expenses", []):
             monthly = to_monthly(expense["value"], expense["time"])
             planned_expenses_tree.root.add_leaf(
                 f"{expense['name']}: {monthly:.2f}$ ({expense['time']})"
             )
-            total_expense += monthly
+            planned_total_expense += monthly
         planned_expenses_tree.root.expand()
 
         # Saving tree
@@ -77,7 +78,24 @@ class FinanceApp(App):
                 monthly_saving_total += monthly_cost
             saving_tree.root.expand()
 
-        net_balance = total_income - total_expense
+        # Expenses tree
+        expenses_tree = self.query_one("#expenses_tree", Tree)
+        expenses = data.get("expenses", [])
+        saving_names = {item["name"].lower(): item["target"] for item in saving.get("items", [])}
+        for expense in sorted(expenses, key=lambda e: e["date"]):
+            leaf_text: str = f"{expense['name']}: {expense['value']:.2f}$"
+
+            if expense["link"].lower() in saving_names:
+                saving_target: float = saving_names[expense["link"].lower()]
+                link_percentage: float = 0.0
+                if saving_target > 0:
+                    link_percentage: float = expense["value"] / saving_names[expense["link"].lower()] * 100.0
+                leaf_text += f" ({link_percentage:.2f}% of {expense["link"].upper()})"
+
+            expenses_tree.root.add_leaf(leaf_text)
+        expenses_tree.root.expand()
+
+        net_balance = total_income - planned_total_expense
         annual_net_balance = net_balance * 12
         net_balance_after_saving = net_balance - monthly_saving_total
 
@@ -86,7 +104,7 @@ class FinanceApp(App):
         table.add_rows(
             [
                 ["Total income", f"{total_income:.2f}", f"{total_income*12:.2f}"],
-                ["Total planned expenses", f"{total_expense:.2f}", f"{total_expense*12:.2f}"],
+                ["Total planned expenses", f"{planned_total_expense:.2f}", f"{planned_total_expense*12:.2f}"],
                 ["Net balance", f"{net_balance:.2f}", f"{annual_net_balance:.2f}"],
                 [
                     "Saving cost",
