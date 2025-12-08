@@ -30,7 +30,7 @@ incomes:
     future_value: 1800
     future_date: "2025-05"
 
-expenses:
+planned_expenses:
   - name: Rent
     value: 350
     time: MONTH

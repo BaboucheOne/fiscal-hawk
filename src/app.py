@@ -55,7 +55,7 @@ class FinanceApp(App):
         # Expenses tree
         expenses_tree = self.query_one("#expenses_tree", Tree)
         total_expense = 0
-        for expense in data.get("expenses", []):
+        for expense in data.get("planned_expenses", []):
             monthly = to_monthly(expense["value"], expense["time"])
             expenses_tree.root.add_leaf(
                 f"{expense['name']}: {monthly:.2f}$ ({expense['time']})"
@@ -86,7 +86,7 @@ class FinanceApp(App):
         table.add_rows(
             [
                 ["Total income", f"{total_income:.2f}", f"{total_income*12:.2f}"],
-                ["Total expenses", f"{total_expense:.2f}", f"{total_expense*12:.2f}"],
+                ["Total planned expenses", f"{total_expense:.2f}", f"{total_expense*12:.2f}"],
                 ["Net balance", f"{net_balance:.2f}", f"{annual_net_balance:.2f}"],
                 [
                     "Saving cost",
