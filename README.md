@@ -38,6 +38,12 @@ planned_expenses:
     value: 16
     time: MONTH
 
+expenses:
+  - name: Japan Airplane tickets
+    value: 1000
+    date: "2026-01-01"
+    link: "Vacation" # Optional
+
 saving:
    warning_percentage: 75
    items:
