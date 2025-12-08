@@ -53,15 +53,15 @@ class FinanceApp(App):
         incomes_tree.root.expand()
 
         # Expenses tree
-        expenses_tree = self.query_one("#expenses_tree", Tree)
+        platformnned_expenses_tree = self.query_one("#platformnned_expenses_tree", Tree)
         total_expense = 0
         for expense in data.get("planned_expenses", []):
             monthly = to_monthly(expense["value"], expense["time"])
-            expenses_tree.root.add_leaf(
+            platformnned_expenses_tree.root.add_leaf(
                 f"{expense['name']}: {monthly:.2f}$ ({expense['time']})"
             )
             total_expense += monthly
-        expenses_tree.root.expand()
+        platformnned_expenses_tree.root.expand()
 
         # Saving tree
         saving_tree = self.query_one("#saving_tree", Tree)
