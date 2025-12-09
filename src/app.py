@@ -2,6 +2,8 @@ from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Tree, DataTable, Static
 from textual.containers import Container, Horizontal
 
+from src.model.account import Account
+from src.model.simulation import Simulation
 from src.screen.compound_interest_screen import CompoundInterestScreen
 from src.screen.compound_interest_simulation_screen import (
     CompoundInterestSimulationScreen,
@@ -17,9 +19,10 @@ class FinanceApp(App):
     ]
     TITLE = "Finances Summary"
 
-    def __init__(self, data, **kwargs):
+    def __init__(self, account: Account, simulation: Simulation, **kwargs):
         super(FinanceApp, self).__init__(**kwargs)
-        self.data = data
+        self.__account: Account = account
+        self.__simulation: Simulation = simulation
 
     def compose(self) -> ComposeResult:
         yield Header()
