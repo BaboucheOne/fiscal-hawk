@@ -8,17 +8,18 @@ from textual_plotext import PlotextPlot
 from src.controller.account_controller import AccountController
 from src.controller.simulation_controller import SimulationController
 from src.model.saving import Saving
+from src.service_locator import ServiceLocator
 from src.utility import monte_carlo_path
 
 
 class CompoundInterestSimulationScreen(Screen):
     BINDINGS = [("b", "back", "Back")]
 
-    def __init__(self, account_controller: AccountController, simulation_controller: SimulationController):
+    def __init__(self):
         super().__init__()
 
-        self.__account_controller: AccountController = account_controller
-        self.__simulation_controller: SimulationController = simulation_controller
+        self.__account_controller: AccountController = ServiceLocator.get_dependency(AccountController)
+        self.__simulation_controller: SimulationController = ServiceLocator.get_dependency(SimulationController)
 
     def compose(self) -> ComposeResult:
         yield Header()

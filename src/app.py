@@ -8,6 +8,7 @@ from src.screen.compound_interest_screen import CompoundInterestScreen
 from src.screen.compound_interest_simulation_screen import (
     CompoundInterestSimulationScreen,
 )
+from src.service_locator import ServiceLocator
 from src.utility import yearly_adjusted_monthly_value, to_monthly
 
 
@@ -19,10 +20,10 @@ class FinanceApp(App):
     ]
     TITLE = "Finances Summary"
 
-    def __init__(self, account_controller: AccountController, simulation_controller: SimulationController, **kwargs):
+    def __init__(self, **kwargs):
         super(FinanceApp, self).__init__(**kwargs)
-        self.__account_controller: AccountController = account_controller
-        self.__simulation_controller: SimulationController = simulation_controller
+        self.__account_controller: AccountController = ServiceLocator.get_dependency(AccountController)
+        self.__simulation_controller: SimulationController = ServiceLocator.get_dependency(SimulationController)
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -122,15 +123,11 @@ class FinanceApp(App):
     def action_compound(self):
         self.push_screen(
             CompoundInterestScreen(
-                self.__account_controller,
-                self.__simulation_controller
             )
         )
 
     def action_simulation(self):
         self.push_screen(
             CompoundInterestSimulationScreen(
-                self.__account_controller,
-                self.__simulation_controller
             )
         )

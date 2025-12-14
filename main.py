@@ -5,6 +5,7 @@ from src.controller.account_controller import AccountController
 from src.controller.simulation_controller import SimulationController
 from src.model.account import Account
 from src.model.root import Root
+from src.service_locator import ServiceLocator
 
 
 def main():
@@ -16,7 +17,10 @@ def main():
     account_controller: AccountController = AccountController(account)
     simulation_controller: SimulationController = SimulationController(root.simulation)
 
-    FinanceApp(account_controller, simulation_controller).run()
+    ServiceLocator.register_dependency(AccountController, account_controller)
+    ServiceLocator.register_dependency(SimulationController, simulation_controller)
+
+    FinanceApp().run()
 
 
 if __name__ == "__main__":
