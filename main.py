@@ -8,9 +8,13 @@ from src.model.root import Root
 from src.service_locator import ServiceLocator
 
 
-def main():
+def load_user_file() -> Root:
     file_path = os.path.join(os.path.dirname(__file__), "finances.yml")
-    root: Root = Root.load(file_path)
+    return Root.load(file_path)
+
+
+def main():
+    root: Root = load_user_file()
 
     account: Account = Account(root.incomes, root.planned_expenses, root.expenses, root.market, root.saving_configuration)
 
