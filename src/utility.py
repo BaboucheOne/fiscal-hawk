@@ -1,5 +1,7 @@
 import random
+from typing import List
 
+from src.model.income import Income
 from src.time import Time
 
 
@@ -14,13 +16,13 @@ def to_monthly(value, time):
         return 0
 
 
-def yearly_adjusted_monthly_value(entry):
-    base_value = entry["value"]
-    time = entry["time"]
+def yearly_adjusted_monthly_value(income: Income) -> float:
+    base_value = income.value
+    time = income.time
     monthly_base = to_monthly(base_value, time)
 
-    future_value = entry.get("future_value")
-    future_date = entry.get("future_date")
+    future_value = income.future_value
+    future_date = income.future_date
 
     if not future_value or not future_date:
         return monthly_base
@@ -61,7 +63,9 @@ def compound_interest_calculator(
     return future_p + future_pmt
 
 
-def monte_carlo_path(start_value, monthly_contribution, years, min_rate, max_rate):
+def monte_carlo_path(
+    start_value, monthly_contribution, years, min_rate: float, max_rate: float
+) -> List[float]:
     value = start_value
     results = [value]
 
