@@ -15,8 +15,12 @@ class CompoundInterestScreen(Screen):
     def __init__(self):
         super().__init__()
 
-        self.__account_controller: AccountController = ServiceLocator.get_dependency(AccountController)
-        self.__simulation_controller: SimulationController = ServiceLocator.get_dependency(SimulationController)
+        self.__account_controller: AccountController = ServiceLocator.get_dependency(
+            AccountController
+        )
+        self.__simulation_controller: SimulationController = (
+            ServiceLocator.get_dependency(SimulationController)
+        )
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -41,7 +45,14 @@ class CompoundInterestScreen(Screen):
             etf_name = etf.name
 
             monthly_contribution = 0.0
-            saving = next((saving for saving in self.__account_controller.saving_configuration.savings if saving.name.lower() == etf_name.lower()), None)
+            saving = next(
+                (
+                    saving
+                    for saving in self.__account_controller.saving_configuration.savings
+                    if saving.name.lower() == etf_name.lower()
+                ),
+                None,
+            )
             if saving:
                 monthly_contribution = saving.target / 12.0
 

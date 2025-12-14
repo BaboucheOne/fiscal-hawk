@@ -16,7 +16,13 @@ def load_user_file() -> Root:
 def main():
     root: Root = load_user_file()
 
-    account: Account = Account(root.incomes, root.planned_expenses, root.expenses, root.market, root.saving_configuration)
+    account: Account = Account(
+        root.incomes,
+        root.planned_expenses,
+        root.expenses,
+        root.market,
+        root.saving_configuration,
+    )
 
     account_controller: AccountController = AccountController(account)
     simulation_controller: SimulationController = SimulationController(root.simulation)

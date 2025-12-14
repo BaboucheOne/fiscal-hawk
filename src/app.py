@@ -22,8 +22,12 @@ class FinanceApp(App):
 
     def __init__(self, **kwargs):
         super(FinanceApp, self).__init__(**kwargs)
-        self.__account_controller: AccountController = ServiceLocator.get_dependency(AccountController)
-        self.__simulation_controller: SimulationController = ServiceLocator.get_dependency(SimulationController)
+        self.__account_controller: AccountController = ServiceLocator.get_dependency(
+            AccountController
+        )
+        self.__simulation_controller: SimulationController = (
+            ServiceLocator.get_dependency(SimulationController)
+        )
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -80,7 +84,10 @@ class FinanceApp(App):
 
         # Expenses tree
         expenses_tree = self.query_one("#expenses_tree", Tree)
-        saving_names = {saving.name.lower(): saving.target for saving in self.__account_controller.saving_configuration.savings}
+        saving_names = {
+            saving.name.lower(): saving.target
+            for saving in self.__account_controller.saving_configuration.savings
+        }
         for expense in sorted(self.__account_controller.expenses, key=lambda e: e.date):
             leaf_text: str = f"{expense.name}: {expense.value:.2f}$"
 
@@ -88,7 +95,9 @@ class FinanceApp(App):
                 saving_target: float = saving_names[expense.link.lower()]
                 link_percentage: float = 0.0
                 if saving_target > 0:
-                    link_percentage: float = expense.value / saving_names[expense.link.lower()] * 100.0
+                    link_percentage: float = (
+                        expense.value / saving_names[expense.link.lower()] * 100.0
+                    )
                 leaf_text += f" ({link_percentage:.2f}% of {expense.link.upper()})"
 
             expenses_tree.root.add_leaf(leaf_text)
@@ -103,7 +112,11 @@ class FinanceApp(App):
         table.add_rows(
             [
                 ["Total income", f"{total_income:.2f}", f"{total_income*12:.2f}"],
-                ["Total planned expenses", f"{planned_total_expense:.2f}", f"{planned_total_expense*12:.2f}"],
+                [
+                    "Total planned expenses",
+                    f"{planned_total_expense:.2f}",
+                    f"{planned_total_expense*12:.2f}",
+                ],
                 ["Net balance", f"{net_balance:.2f}", f"{annual_net_balance:.2f}"],
                 [
                     "Saving cost",
@@ -121,13 +134,7 @@ class FinanceApp(App):
         table.focus()
 
     def action_compound(self):
-        self.push_screen(
-            CompoundInterestScreen(
-            )
-        )
+        self.push_screen(CompoundInterestScreen())
 
     def action_simulation(self):
-        self.push_screen(
-            CompoundInterestSimulationScreen(
-            )
-        )
+        self.push_screen(CompoundInterestSimulationScreen())
