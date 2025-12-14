@@ -2,8 +2,8 @@ from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Tree, DataTable, Static
 from textual.containers import Container, Horizontal
 
-from src.model.account import Account
-from src.model.simulation import Simulation
+from src.controller.account_controller import AccountController
+from src.controller.simulation_controller import SimulationController
 from src.screen.compound_interest_screen import CompoundInterestScreen
 from src.screen.compound_interest_simulation_screen import (
     CompoundInterestSimulationScreen,
@@ -19,10 +19,10 @@ class FinanceApp(App):
     ]
     TITLE = "Finances Summary"
 
-    def __init__(self, account: Account, simulation: Simulation, **kwargs):
+    def __init__(self, account_controller: AccountController, simulation_controller: SimulationController, **kwargs):
         super(FinanceApp, self).__init__(**kwargs)
-        self.__account: Account = account
-        self.__simulation: Simulation = simulation
+        self.__account_controller: AccountController = account_controller
+        self.__simulation_controller: SimulationController = simulation_controller
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -43,15 +43,14 @@ class FinanceApp(App):
         self.load_finances()
 
     def load_finances(self):
-        data = self.data
         # Incomes tree
         incomes_tree = self.query_one("#incomes_tree", Tree)
         total_income = 0
-        for income in data.get("incomes", []):
+        for income in self.__account_controller.incomes:
             income_value = yearly_adjusted_monthly_value(income)
-            monthly = to_monthly(income_value, income["time"])
+            monthly = to_monthly(income_value, income.time)
             incomes_tree.root.add_leaf(
-                f"{income['name']}: {monthly:.2f}$ (weighted annual average)"
+                f"{income.name}: {monthly:.2f}$ (weighted annual average)"
             )
             total_income += monthly
         incomes_tree.root.expand()
@@ -59,41 +58,37 @@ class FinanceApp(App):
         # Expenses tree
         planned_expenses_tree = self.query_one("#planned_expenses_tree", Tree)
         planned_total_expense = 0
-        for expense in data.get("planned_expenses", []):
-            monthly = to_monthly(expense["value"], expense["time"])
+        for expense in self.__account_controller.planned_expenses:
+            monthly = to_monthly(expense.value, expense.time)
             planned_expenses_tree.root.add_leaf(
-                f"{expense['name']}: {monthly:.2f}$ ({expense['time']})"
+                f"{expense.name}: {monthly:.2f}$ ({expense.time})"
             )
             planned_total_expense += monthly
         planned_expenses_tree.root.expand()
 
         # Saving tree
         saving_tree = self.query_one("#saving_tree", Tree)
-        saving = data.get("saving")
         monthly_saving_total = 0
-        if saving:
-            items = saving.get("items", [])
-            for item in items:
-                monthly_cost = item["target"] / 12
-                saving_tree.root.add_leaf(
-                    f"{item['name']}: {monthly_cost:.2f}$ (target: {item['target']}$)"
-                )
-                monthly_saving_total += monthly_cost
-            saving_tree.root.expand()
+        for saving in self.__account_controller.saving_configuration.savings:
+            monthly_cost = saving.target / 12
+            saving_tree.root.add_leaf(
+                f"{saving.name}: {monthly_cost:.2f}$ (target: {saving.target}$)"
+            )
+            monthly_saving_total += monthly_cost
+        saving_tree.root.expand()
 
         # Expenses tree
         expenses_tree = self.query_one("#expenses_tree", Tree)
-        expenses = data.get("expenses", [])
-        saving_names = {item["name"].lower(): item["target"] for item in saving.get("items", [])}
-        for expense in sorted(expenses, key=lambda e: e["date"]):
-            leaf_text: str = f"{expense['name']}: {expense['value']:.2f}$"
+        saving_names = {saving.name.lower(): saving.target for saving in self.__account_controller.saving_configuration.savings}
+        for expense in sorted(self.__account_controller.expenses, key=lambda e: e.date):
+            leaf_text: str = f"{expense.name}: {expense.value:.2f}$"
 
-            if expense["link"].lower() in saving_names:
-                saving_target: float = saving_names[expense["link"].lower()]
+            if expense.link.lower() in saving_names:
+                saving_target: float = saving_names[expense.link.lower()]
                 link_percentage: float = 0.0
                 if saving_target > 0:
-                    link_percentage: float = expense["value"] / saving_names[expense["link"].lower()] * 100.0
-                leaf_text += f" ({link_percentage:.2f}% of {expense["link"].upper()})"
+                    link_percentage: float = expense.value / saving_names[expense.link.lower()] * 100.0
+                leaf_text += f" ({link_percentage:.2f}% of {expense.link.upper()})"
 
             expenses_tree.root.add_leaf(leaf_text)
         expenses_tree.root.expand()
@@ -127,17 +122,15 @@ class FinanceApp(App):
     def action_compound(self):
         self.push_screen(
             CompoundInterestScreen(
-                self.data["market"],
-                self.data["simulation"],
-                self.data["saving"]["items"],
+                self.__account_controller,
+                self.__simulation_controller
             )
         )
 
     def action_simulation(self):
         self.push_screen(
             CompoundInterestSimulationScreen(
-                self.data["market"],
-                self.data["simulation"],
-                self.data["saving"]["items"],
+                self.__account_controller,
+                self.__simulation_controller
             )
         )

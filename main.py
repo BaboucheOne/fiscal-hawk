@@ -1,6 +1,8 @@
 import os
 
 from src.app import FinanceApp
+from src.controller.account_controller import AccountController
+from src.controller.simulation_controller import SimulationController
 from src.model.account import Account
 from src.model.root import Root
 
@@ -11,7 +13,10 @@ def main():
 
     account: Account = Account(root.incomes, root.planned_expenses, root.expenses, root.market, root.saving_configuration)
 
-    FinanceApp(account, root.simulation).run()
+    account_controller: AccountController = AccountController(account)
+    simulation_controller: SimulationController = SimulationController(root.simulation)
+
+    FinanceApp(account_controller, simulation_controller).run()
 
 
 if __name__ == "__main__":

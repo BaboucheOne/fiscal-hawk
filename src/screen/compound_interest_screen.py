@@ -1,21 +1,21 @@
-from typing import List, Dict
-
 from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widgets import Header, Footer
 from textual_plotext import PlotextPlot
 
+from src.controller.account_controller import AccountController
+from src.controller.simulation_controller import SimulationController
 from src.utility import compound_interest_calculator
 
 
 class CompoundInterestScreen(Screen):
     BINDINGS = [("b", "back", "Back")]
 
-    def __init__(self, market_data, simulation_data, saving_items: List[Dict]):
+    def __init__(self, account_controller: AccountController, simulation_controller: SimulationController):
         super().__init__()
-        self.market_data = market_data
-        self.simulation_data = simulation_data
-        self.saving_items = saving_items
+
+        self.__account_controller: AccountController = account_controller
+        self.__simulation_controller: SimulationController = simulation_controller
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -28,23 +28,21 @@ class CompoundInterestScreen(Screen):
     def draw_chart(self):
         chart = self.query_one("#chart_area", PlotextPlot).plt
 
-        etfs = self.market_data.get("etf", [])
-
         start_year = 2025
-        until_year = self.simulation_data.get("until_year", 2050)
-        annual_rate = self.simulation_data.get("annual_rate", 0.1)
+        until_year = self.__simulation_controller.simulation.until_year
+        annual_rate = self.__simulation_controller.simulation.max_annual_rate
         years_list = list(range(start_year, until_year + 1))
 
         chart.clear_figure()
 
-        for etf in etfs:
-            start_value = etf["price"]
-            etf_name = etf["name"]
+        for etf in self.__account_controller.market.etfs:
+            start_value = etf.price
+            etf_name = etf.name
 
             monthly_contribution = 0.0
-            item = next((x for x in self.saving_items if x["name"] == etf_name), None)
-            if item:
-                monthly_contribution = item["target"] / 12.0
+            saving = next((saving for saving in self.__account_controller.saving_configuration.savings if saving.name.lower() == etf_name.lower()), None)
+            if saving:
+                monthly_contribution = saving.target / 12.0
 
             values = [
                 compound_interest_calculator(
