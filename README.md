@@ -44,14 +44,14 @@ expenses:
     date: "2026-01-01"
     link: "Vacation" # Optional
 
-saving:
+saving_configuration:
    warning_percentage: 75
-   items:
+   savings:
     - name: Vacation
       target: 2000
 
 market:
-  etf:
+  etfs:
     - name: "VGRO"
       price: 10000
 

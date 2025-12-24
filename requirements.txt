@@ -1,2 +1,5 @@
-textual>=0.25.0
-PyYAML>=6.0
+-r requirements.txt
+
+textual>=6.11.0
+PyYAML==6.0.3
+textual-plotext==1.0.1
