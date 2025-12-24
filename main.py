@@ -1,6 +1,8 @@
 import argparse
 from pathlib import Path
 
+from src.service.compound_interest_calculator import CompoundInterestCalculator
+from src.service.monte_carlo_compound_interest_calculator import MonteCarloCompoundInterestCalculator
 from src.app import FinanceApp
 from src.controller.account_controller import AccountController
 from src.controller.simulation_controller import SimulationController
@@ -18,7 +20,7 @@ def read_arguments() -> argparse.Namespace:
         nargs="?",
         dest="filename",
         default="finances.yml",
-        help=("Specify a yaml file with your finances."),
+        help="Specify a yaml file with your finances.",
     )
 
     return parser.parse_args()
@@ -44,8 +46,19 @@ def main(filename: str) -> None:
         root.saving_configuration,
     )
 
+    compound_interest_calculator: CompoundInterestCalculator = (
+        CompoundInterestCalculator(account, root.simulation)
+    )
+    monte_carlo_compound_interest_calculator: MonteCarloCompoundInterestCalculator = (
+        MonteCarloCompoundInterestCalculator(account, root.simulation)
+    )
+
     account_controller: AccountController = AccountController(account)
-    simulation_controller: SimulationController = SimulationController(root.simulation)
+    simulation_controller: SimulationController = SimulationController(
+        root.simulation,
+        compound_interest_calculator,
+        monte_carlo_compound_interest_calculator,
+    )
 
     ServiceLocator.register_dependency(AccountController, account_controller)
     ServiceLocator.register_dependency(SimulationController, simulation_controller)

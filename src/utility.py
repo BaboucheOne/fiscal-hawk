@@ -1,6 +1,9 @@
 import random
+from datetime import datetime
 from typing import List
 
+from src.model.etf import Etf
+from src.model.saving import Saving
 from src.model.income import Income
 from src.time import Time
 
@@ -64,12 +67,16 @@ def compound_interest_calculator(
 
 
 def monte_carlo_path(
-    start_value, monthly_contribution, years, min_rate: float, max_rate: float
+    start_value: float,
+    monthly_contribution: float,
+    years: List[int],
+    min_rate: float,
+    max_rate: float,
 ) -> List[float]:
     value = start_value
     results = [value]
 
-    for _ in range(years):
+    for _ in years:
         r = random.uniform(min_rate, max_rate)
 
         for _ in range(12):
@@ -78,3 +85,20 @@ def monte_carlo_path(
         results.append(value)
 
     return results
+
+
+def calculate_monthly_contribution(savings: List[Saving], etf: Etf) -> float:
+    try:
+        saving = next(s for s in savings if s.name.casefold() == etf.name.casefold())
+        return saving.target / 12.0
+    except StopIteration:
+        return 0.0
+
+
+def get_years(from_year: int, to_year: int) -> List[int]:
+    return list(range(from_year, to_year + 1))
+
+
+def get_years_from_now(to_year: int) -> List[int]:
+    current_year: int = datetime.today().year
+    return get_years(current_year, to_year)

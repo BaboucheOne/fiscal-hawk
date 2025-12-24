@@ -1,3 +1,5 @@
+from typing import List
+
 from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widgets import Header, Footer
@@ -6,7 +8,6 @@ from textual_plotext import PlotextPlot
 from src.controller.account_controller import AccountController
 from src.controller.simulation_controller import SimulationController
 from src.service_locator import ServiceLocator
-from src.utility import compound_interest_calculator
 
 
 class CompoundInterestScreen(Screen):
@@ -32,41 +33,15 @@ class CompoundInterestScreen(Screen):
 
     def draw_chart(self):
         chart = self.query_one("#chart_area", PlotextPlot).plt
-
-        start_year = 2025
-        until_year = self.__simulation_controller.simulation.until_year
-        annual_rate = self.__simulation_controller.simulation.max_annual_rate
-        years_list = list(range(start_year, until_year + 1))
-
         chart.clear_figure()
 
+        years_list = self.__simulation_controller.get_years_from_now()
+
         for etf in self.__account_controller.market.etfs:
-            start_value = etf.price
-            etf_name = etf.name
-
-            monthly_contribution = 0.0
-            saving = next(
-                (
-                    saving
-                    for saving in self.__account_controller.saving_configuration.savings
-                    if saving.name.lower() == etf_name.lower()
-                ),
-                None,
+            values: List[float] = (
+                self.__simulation_controller.simulate_compound_interest_on_etf(etf)
             )
-            if saving:
-                monthly_contribution = saving.target / 12.0
-
-            values = [
-                compound_interest_calculator(
-                    current_value=start_value,
-                    monthly_contribution=monthly_contribution,
-                    annual_rate=annual_rate,
-                    years=year - start_year,
-                )
-                for year in years_list
-            ]
-
-            chart.plot(years_list, values, marker="dot", label=etf_name)
+            chart.plot(years_list, values, marker="dot", label=etf.name)
 
         chart.title("Portfolio Growth")
         chart.xlabel("Year")
