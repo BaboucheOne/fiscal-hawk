@@ -1,4 +1,5 @@
-import os
+import argparse
+from pathlib import Path
 
 from src.app import FinanceApp
 from src.controller.account_controller import AccountController
@@ -8,13 +9,32 @@ from src.model.root import Root
 from src.service_locator import ServiceLocator
 
 
-def load_user_file() -> Root:
-    file_path = os.path.join(os.path.dirname(__file__), "finances.yml")
-    return Root.load(file_path)
+def read_arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--f",
+        type=str,
+        nargs="?",
+        dest="filename",
+        default="finances.yml",
+        help=("Specify a yaml file with your finances."),
+    )
+
+    return parser.parse_args()
 
 
-def main():
-    root: Root = load_user_file()
+def load_user_file(filename: str) -> Root:
+    file_path = Path(__file__).parent / filename
+    if not Path.exists(file_path):
+        print(f"File {file_path} does not exist")
+        exit(-1)
+
+    return Root.load(str(file_path))
+
+
+def main(filename: str) -> None:
+    root: Root = load_user_file(filename)
 
     account: Account = Account(
         root.incomes,
@@ -34,4 +54,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    args = read_arguments()
+    main(args.filename)
