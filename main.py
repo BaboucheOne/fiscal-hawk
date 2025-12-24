@@ -2,7 +2,9 @@ import argparse
 from pathlib import Path
 
 from src.service.compound_interest_calculator import CompoundInterestCalculator
-from src.service.monte_carlo_compound_interest_calculator import MonteCarloCompoundInterestCalculator
+from src.service.monte_carlo_compound_interest_calculator import (
+    MonteCarloCompoundInterestCalculator,
+)
 from src.app import FinanceApp
 from src.controller.account_controller import AccountController
 from src.controller.simulation_controller import SimulationController
