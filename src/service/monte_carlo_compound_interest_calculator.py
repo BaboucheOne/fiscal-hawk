@@ -30,7 +30,10 @@ class MonteCarloCompoundInterestCalculator:
             r = random.uniform(min_rate, max_rate)
 
             for _ in range(self.NUMBER_OF_MONTHS_IN_YEAR):
-                value = value * (1.0 + r / self.NUMBER_OF_MONTHS_IN_YEAR) + monthly_contribution
+                value = (
+                    value * (1.0 + r / self.NUMBER_OF_MONTHS_IN_YEAR)
+                    + monthly_contribution
+                )
 
             results.append(value)
 
