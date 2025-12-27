@@ -1,4 +1,3 @@
-import random
 from datetime import datetime
 from typing import List
 
@@ -64,27 +63,6 @@ def compound_interest_calculator(
         future_pmt = 0
 
     return future_p + future_pmt
-
-
-def monte_carlo_path(
-    start_value: float,
-    monthly_contribution: float,
-    years: List[int],
-    min_rate: float,
-    max_rate: float,
-) -> List[float]:
-    value = start_value
-    results = [value]
-
-    for _ in years:
-        r = random.uniform(min_rate, max_rate)
-
-        for _ in range(12):
-            value = value * (1 + r / 12) + monthly_contribution
-
-        results.append(value)
-
-    return results
 
 
 def calculate_monthly_contribution(savings: List[Saving], etf: Etf) -> float:
