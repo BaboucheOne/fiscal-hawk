@@ -1,5 +1,5 @@
-from datetime import datetime
-from typing import List
+from datetime import datetime, date
+from typing import List, Optional
 
 from src.model.etf import Etf
 from src.model.saving import Saving
@@ -18,20 +18,13 @@ def to_monthly(value, time):
         return 0
 
 
-def yearly_adjusted_monthly_value(income: Income) -> float:
-    base_value = income.value
-    time = income.time
-    monthly_base = to_monthly(base_value, time)
-
-    future_value = income.future_value
-    future_date = income.future_date
+def yearly_adjusted_monthly_value(value: float, time: Time, future_value: Optional[float], future_date: Optional[date]) -> float:
+    monthly_base = to_monthly(value, time)
 
     if not future_value or not future_date:
         return monthly_base
 
-    year, month = map(int, future_date.split("-"))
-
-    new_months = max(0, 12 - (month - 1))
+    new_months = max(0, 12 - (int(future_date.month) - 1))
     old_months = 12 - new_months
 
     monthly_future = to_monthly(future_value, time)

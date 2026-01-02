@@ -34,6 +34,8 @@ planned_expenses:
   - name: Rent
     value: 350
     time: MONTH
+    future_value: 400
+    future_date: "2025-07"
   - name: Spotify
     value: 16
     time: MONTH

@@ -52,7 +52,7 @@ class FinanceApp(App):
         incomes_tree = self.query_one("#incomes_tree", Tree)
         total_income = 0
         for income in self.__account_controller.incomes:
-            income_value = yearly_adjusted_monthly_value(income)
+            income_value = yearly_adjusted_monthly_value(income.value, income.time, income.future_value, income.future_date)
             monthly = to_monthly(income_value, income.time)
             incomes_tree.root.add_leaf(
                 f"{income.name}: {monthly:.2f}$ (weighted annual average)"
@@ -60,11 +60,12 @@ class FinanceApp(App):
             total_income += monthly
         incomes_tree.root.expand()
 
-        # Expenses tree
+        # Planned Expenses tree
         planned_expenses_tree = self.query_one("#planned_expenses_tree", Tree)
         planned_total_expense = 0
         for expense in self.__account_controller.planned_expenses:
-            monthly = to_monthly(expense.value, expense.time)
+            planned_expense_value = yearly_adjusted_monthly_value(expense.value, expense.time, expense.future_value, expense.future_date)
+            monthly = to_monthly(planned_expense_value, expense.time)
             planned_expenses_tree.root.add_leaf(
                 f"{expense.name}: {monthly:.2f}$ ({expense.time})"
             )
