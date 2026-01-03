@@ -5,6 +5,8 @@ This project helps you plan future expenses, track incomes, and see what you can
 
 ## Setup
 
+Install python 3.13
+
 1. Create the virtual environment:
    ```sh
    python3 -m venv .venv
