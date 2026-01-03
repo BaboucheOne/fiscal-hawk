@@ -39,7 +39,7 @@ class FinanceApp(App):
                 Tree("Saving", id="saving_tree"),
             ),
             Static("\n"),
-            DataTable(id="summary_table"),
+            Horizontal(DataTable(id="summary_table"), DataTable(id="summary_market")),
         )
         yield Footer()
 
@@ -51,6 +51,7 @@ class FinanceApp(App):
         self.__display_savings_tree()
         self.__display_expenses_tree()
         self.__display_monthly_and_annual_summary()
+        self.__display_summary_market()
 
     def __display_income_tree(self):
         incomes_tree = self.query_one("#incomes_tree", Tree)
@@ -145,8 +146,21 @@ class FinanceApp(App):
                 ],
             ]
         )
-        table.cursor_type = "row"
-        table.focus()
+
+    def __display_summary_market(self):
+        table = self.query_one("#summary_market", DataTable)
+        table.add_columns("Name", "Price", "Quantity")
+
+        table.add_rows(
+            [
+                [etf.name.upper(), f"{etf.price:.2f}", f"{etf.quantity:.4f}"]
+                for etf in self.__account_controller.market.etfs
+            ]
+            + [
+                [stock.name.upper(), "-", f"{stock.quantity:.4f}"]
+                for stock in self.__account_controller.market.stocks
+            ]
+        )
 
     def action_compound(self):
         self.push_screen(CompoundInterestScreen())

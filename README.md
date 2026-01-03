@@ -56,8 +56,12 @@ saving_configuration:
 
 market:
   etfs:
-    - name: "VGRO"
+    - name: VGRO
       price: 10000
+      quantity: 1.0
+  stocks:
+    - name: APPL
+      quantity: 10.0
 
 simulation:
     runs: 100
