@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import List
+from datetime import date
+from typing import List, get_origin, Union, get_args
 
 import yaml
 
@@ -22,6 +23,17 @@ class Root:
 
     @staticmethod
     def from_dict(data_class, data):
+        origin = get_origin(data_class)
+
+        if origin is Union:
+            inner_types = [t for t in get_args(data_class) if t is not type(None)]
+            inner_type = inner_types[0] if inner_types else None
+
+            if data is None:
+                return None
+
+            return Root.from_dict(inner_type, data)
+
         if isinstance(data, list):
             inner_type = data_class.__args__[0]
             return [Root.from_dict(inner_type, item) for item in data]
@@ -32,6 +44,13 @@ class Root:
                 if key in data:
                     kwargs[key] = Root.from_dict(field_type, data[key])
             return data_class(**kwargs)
+
+        if data_class is date and isinstance(data, str):
+            parts = data.split("-")
+            if len(parts) == 2:
+                year, month = map(int, parts)
+                return date(year, month, 1)
+            return date.fromisoformat(data)
 
         return data
 
