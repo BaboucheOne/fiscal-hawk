@@ -29,15 +29,15 @@ incomes:
   - name: Salary
     value: 1500
     time: MONTH
-    future_value: 1800
-    future_date: "2025-05"
+    future_value: 1800 # Optional
+    future_date: "2025-05" # Optional
 
 planned_expenses:
   - name: Rent
     value: 350
     time: MONTH
-    future_value: 400
-    future_date: "2025-07"
+    future_value: 400 # Optional
+    future_date: "2025-07" # Optional
   - name: Spotify
     value: 16
     time: MONTH
