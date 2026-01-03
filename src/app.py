@@ -45,50 +45,33 @@ class FinanceApp(App):
 
     def on_mount(self):
         self.title = self.TITLE
-        self.load_finances()
 
-    def load_finances(self):
-        # Incomes tree
+        self.__display_income_tree()
+        self.__display_planned_expenses_tree()
+        self.__display_savings_tree()
+        self.__display_expenses_tree()
+        self.__display_monthly_and_annual_summary()
+
+    def __display_income_tree(self):
         incomes_tree = self.query_one("#incomes_tree", Tree)
-        total_income = 0
         for income in self.__account_controller.incomes:
-            income_value = yearly_adjusted_monthly_value(income.value, income.time, income.future_value, income.future_date)
+            income_value = yearly_adjusted_monthly_value(
+                income.value, income.time, income.future_value, income.future_date
+            )
             monthly = to_monthly(income_value, income.time)
             incomes_tree.root.add_leaf(
                 f"{income.name}: {monthly:.2f}$ (weighted annual average)"
             )
-            total_income += monthly
         incomes_tree.root.expand()
 
-        # Planned Expenses tree
-        planned_expenses_tree = self.query_one("#planned_expenses_tree", Tree)
-        planned_total_expense = 0
-        for expense in self.__account_controller.planned_expenses:
-            planned_expense_value = yearly_adjusted_monthly_value(expense.value, expense.time, expense.future_value, expense.future_date)
-            monthly = to_monthly(planned_expense_value, expense.time)
-            planned_expenses_tree.root.add_leaf(
-                f"{expense.name}: {monthly:.2f}$ ({expense.time})"
-            )
-            planned_total_expense += monthly
-        planned_expenses_tree.root.expand()
-
-        # Saving tree
-        saving_tree = self.query_one("#saving_tree", Tree)
-        monthly_saving_total = 0
-        for saving in self.__account_controller.saving_configuration.savings:
-            monthly_cost = saving.target / 12
-            saving_tree.root.add_leaf(
-                f"{saving.name}: {monthly_cost:.2f}$ (target: {saving.target}$)"
-            )
-            monthly_saving_total += monthly_cost
-        saving_tree.root.expand()
-
-        # Expenses tree
+    def __display_expenses_tree(self):
         expenses_tree = self.query_one("#expenses_tree", Tree)
+
         saving_names = {
             saving.name.lower(): saving.target
             for saving in self.__account_controller.saving_configuration.savings
         }
+
         for expense in sorted(self.__account_controller.expenses, key=lambda e: e.date):
             leaf_text: str = f"{expense.name}: {expense.value:.2f}$"
 
@@ -104,30 +87,61 @@ class FinanceApp(App):
             expenses_tree.root.add_leaf(leaf_text)
         expenses_tree.root.expand()
 
-        net_balance = total_income - planned_total_expense
-        annual_net_balance = net_balance * 12
-        net_balance_after_saving = net_balance - monthly_saving_total
+    def __display_planned_expenses_tree(self):
+        planned_expenses_tree = self.query_one("#planned_expenses_tree", Tree)
+        for planned_expense in self.__account_controller.planned_expenses:
+            adjusted_value = yearly_adjusted_monthly_value(
+                planned_expense.value,
+                planned_expense.time,
+                planned_expense.future_value,
+                planned_expense.future_date,
+            )
+            monthly_amount = to_monthly(adjusted_value, planned_expense.time)
+
+            label = f"{planned_expense.name}: {monthly_amount:.2f}$ ({planned_expense.time})"
+            if planned_expense.future_value:
+                label += " (weighted annual average)"
+
+            planned_expenses_tree.root.add_leaf(label)
+        planned_expenses_tree.root.expand()
+
+    def __display_savings_tree(self):
+        saving_tree = self.query_one("#saving_tree", Tree)
+        for saving in self.__account_controller.saving_configuration.savings:
+            monthly_cost = saving.target / 12
+            saving_tree.root.add_leaf(
+                f"{saving.name}: {monthly_cost:.2f}$ (target: {saving.target}$)"
+            )
+        saving_tree.root.expand()
+
+    def __display_monthly_and_annual_summary(self):
+        total_income: float = self.__account_controller.total_income
+        total_planned_expense: float = self.__account_controller.total_expected_expense
+        total_saving: float = self.__account_controller.total_saving
+
+        net_balance = total_income - total_planned_expense
+        net_balance_after_saving = net_balance - total_saving
 
         table = self.query_one("#summary_table", DataTable)
         table.add_columns("Item", "Monthly ($)", "Annual ($)")
         table.add_rows(
             [
-                ["Total income", f"{total_income:.2f}", f"{total_income*12:.2f}"],
+                ["Total income", f"{total_income / 12:.2f}", f"{total_income:.2f}"],
                 [
                     "Total planned expenses",
-                    f"{planned_total_expense:.2f}",
-                    f"{planned_total_expense*12:.2f}",
+                    f"{total_planned_expense:.2f}",
+                    f"{total_planned_expense * 12:.2f}",
                 ],
-                ["Net balance", f"{net_balance:.2f}", f"{annual_net_balance:.2f}"],
+                ["Net balance", f"{net_balance / 12:.2f}", f"{net_balance:.2f}"],
                 [
                     "Saving cost",
-                    f"{monthly_saving_total:.2f}",
-                    f"{monthly_saving_total*12:.2f}",
+                    f"{total_saving / 12:.2f}",
+                    f"{total_saving:.2f}",
                 ],
                 [
                     "Net after saving",
+                    f"{net_balance_after_saving / 12:.2f}",
                     f"{net_balance_after_saving:.2f}",
-                    f"{net_balance_after_saving*12:.2f}",
                 ],
             ]
         )

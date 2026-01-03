@@ -3,7 +3,6 @@ from typing import List, Optional
 
 from src.model.etf import Etf
 from src.model.saving import Saving
-from src.model.income import Income
 from src.time import Time
 
 
@@ -18,7 +17,9 @@ def to_monthly(value, time):
         return 0
 
 
-def yearly_adjusted_monthly_value(value: float, time: Time, future_value: Optional[float], future_date: Optional[date]) -> float:
+def yearly_adjusted_monthly_value(
+    value: float, time: Time, future_value: Optional[float], future_date: Optional[date]
+) -> float:
     monthly_base = to_monthly(value, time)
 
     if not future_value or not future_date:

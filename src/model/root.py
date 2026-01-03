@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import date
-from typing import List, Optional, get_origin, Union, get_args
+from typing import List, get_origin, Union, get_args
 
 import yaml
 

@@ -31,3 +31,15 @@ class AccountController:
     @property
     def saving_configuration(self) -> SavingConfiguration:
         return self.__account.saving_configuration
+
+    @property
+    def total_income(self) -> float:
+        return self.__account.total_income()
+
+    @property
+    def total_expected_expense(self) -> float:
+        return self.__account.total_planned_expenses()
+
+    @property
+    def total_saving(self) -> float:
+        return self.__account.total_savings()
