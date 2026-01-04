@@ -41,7 +41,7 @@ class CompoundInterestSimulationScreen(Screen):
             values: List[float] = (
                 self.__simulation_controller.simulate_monte_carlo_on_etf(etf)
             )
-            chart.plot(years_list, values, marker="dot", label=f"{etf.name} (median)")
+            chart.plot(years_list, values, marker="dot", label=f"{etf.symbol} (median)")
 
         chart.title("Monte Carlo Portfolio Projection")
         chart.xlabel("Year")

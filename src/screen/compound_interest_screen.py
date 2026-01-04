@@ -41,7 +41,7 @@ class CompoundInterestScreen(Screen):
             values: List[float] = (
                 self.__simulation_controller.simulate_compound_interest_on_etf(etf)
             )
-            chart.plot(years_list, values, marker="dot", label=etf.name)
+            chart.plot(years_list, values, marker="dot", label=etf.symbol)
 
         chart.title("Portfolio Growth")
         chart.xlabel("Year")

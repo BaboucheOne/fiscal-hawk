@@ -149,15 +149,15 @@ class FinanceApp(App):
 
     def __display_summary_market(self):
         table = self.query_one("#summary_market", DataTable)
-        table.add_columns("Name", "Price", "Quantity")
+        table.add_columns("Symbol", "Price", "Quantity")
 
         table.add_rows(
             [
-                [etf.name.upper(), f"{etf.price:.2f}", f"{etf.quantity:.4f}"]
+                [etf.symbol.upper(), f"{etf.price:.2f}", f"{etf.quantity:.4f}"]
                 for etf in self.__account_controller.market.etfs
             ]
             + [
-                [stock.name.upper(), "-", f"{stock.quantity:.4f}"]
+                [stock.symbol.upper(), "-", f"{stock.quantity:.4f}"]
                 for stock in self.__account_controller.market.stocks
             ]
         )

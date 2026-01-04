@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Stock:
-    name: str
+    symbol: str
     quantity: float
 
     def __post_init__(self):

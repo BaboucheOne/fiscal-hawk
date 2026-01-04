@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Etf:
-    name: str
+    symbol: str
     price: float
     quantity: float
 

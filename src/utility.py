@@ -61,7 +61,7 @@ def compound_interest_calculator(
 
 def calculate_monthly_contribution(savings: List[Saving], etf: Etf) -> float:
     try:
-        saving = next(s for s in savings if s.name.casefold() == etf.name.casefold())
+        saving = next(s for s in savings if s.name.casefold() == etf.symbol.casefold())
         return saving.target / 12.0
     except StopIteration:
         return 0.0
